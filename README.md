@@ -1,13 +1,8 @@
-# Project Name
+# Polyprotein Assembler
 
 <div align="center">
   <b>🚧 This project is currently under construction 🚧</b>
 </div>
-
-## About
-...
-
-# Polyprotein Assembler
 
 A Nextflow workflow to assemble and reconstruct viral polyproteins from metagenomic data, with a focus on mammalian viruses like picornaviruses.
 
@@ -61,7 +56,34 @@ nextflow run main.nf --reads 'path/to/reads/*_{1,2}.fastq.gz' --assembly_tool sp
 
 # Run with Docker
 nextflow run main.nf -profile docker --reads 'path/to/reads/*_{1,2}.fastq.gz'
+
+# Run with Conda/Mamba (recommended for all systems)
+nextflow run main.nf -profile conda --reads 'path/to/reads/*_{1,2}.fastq.gz'
+
+# For Apple Silicon (M1/M2/M3) optimized performance
+nextflow run main.nf -profile apple_silicon --reads 'path/to/reads/*_{1,2}.fastq.gz'
 ```
+
+### Apple Silicon Optimization
+
+The pipeline includes specific optimizations for Apple Silicon (M1/M2/M3) Macs:
+
+1. **Installation on Apple Silicon**:
+   ```bash
+   # Create conda environment optimized for Apple Silicon
+   CONDA_SUBDIR=osx-arm64 mamba env create -f conda/conda-apple-silicon.yml
+   ```
+
+2. **Performance Optimizations**:
+   - Use of `pyhmmer` for native ARM64 HMMER searches (~2-4x faster than emulated HMMER)
+   - Optimized memory usage for memory-intensive steps (assembly, HMM search)
+   - Native ARM64 binaries for all tools when using the `apple_silicon` profile
+
+3. **Running with Apple Silicon Optimizations**:
+   ```bash
+   # Use the apple_silicon profile for best performance
+   nextflow run main.nf -profile apple_silicon --reads 'path/to/reads/*_{1,2}.fastq.gz'
+   ```
 
 ## Custom HMM Profiles
 
@@ -100,18 +122,32 @@ The pipeline generates the following outputs in the results directory:
 
 - Nextflow (>=21.04.0)
 - Java (>=11)
-- Docker, Conda, or Singularity (optional, for containerized execution)
+- Docker, Conda/Mamba, or Singularity (optional, for containerized execution)
 
 The following tools are required (automatically installed with Docker/Conda profiles):
 - FastQC
 - Trimmomatic
 - MEGAHIT/SPAdes
 - EMBOSS (transeq)
-- HMMER
-- Python (>=3.6) with Biopython, pandas, matplotlib, and networkx
+- HMMER (or pyhmmer on Apple Silicon)
+- Python (>=3.9) with Biopython, pandas, matplotlib, and networkx
 - BWA
 - Samtools
 - Seqtk
+- CD-HIT (for clustering sequences when building HMM profiles)
+- MAFFT (for creating alignments when building HMM profiles)
+
+### System Requirements
+
+- **Recommended Memory**: 16GB+ RAM (32GB+ for large metagenomes)
+- **Disk Space**: 100GB+ free space for temporary and output files
+- **CPU**: 8+ cores recommended
+- **Supported Platforms**:
+  - Linux (x86_64)
+  - macOS (Intel and Apple Silicon)
+  - Windows (via WSL2 or Docker)
+  
+For Apple Silicon (M1/M2/M3) Macs, we recommend using the `apple_silicon` profile for optimal performance.
 
 ## License
 

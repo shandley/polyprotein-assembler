@@ -25,10 +25,25 @@ This project is a Nextflow workflow for assembling viral polyproteins from metag
   nextflow run main.nf -profile conda --reads 'path/to/reads/*_{1,2}.fastq.gz'
   ```
 
+- **Run on Apple Silicon (M1/M2/M3)**:
+  ```bash
+  # Create optimized conda environment for Apple Silicon
+  CONDA_SUBDIR=osx-arm64 mamba env create -f conda/conda-apple-silicon.yml
+  # Run with Apple Silicon optimizations
+  nextflow run main.nf -profile apple_silicon --reads 'path/to/reads/*_{1,2}.fastq.gz'
+  ```
+
 - **Build HMM Profiles**:
   ```bash
+  # Cluster sequences to reduce redundancy
+  cd-hit -i all_polyproteins.faa -o clustered_polyproteins.faa -c 0.9
+  # Create multiple sequence alignment
+  mafft --auto clustered_polyproteins.faa > aligned_polyproteins.afa
+  # Build HMM profile
   hmmbuild profile.hmm aligned_sequences.afa
+  # Combine multiple profiles
   cat profile1.hmm profile2.hmm > db/polyprotein_profiles.hmm
+  # Index the HMM database
   hmmpress db/polyprotein_profiles.hmm
   ```
 
