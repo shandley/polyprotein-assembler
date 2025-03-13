@@ -3,7 +3,7 @@
 <div align="center">
   <b>🚧 This project is currently under construction 🚧</b>
 </div>
----
+------------------------------------------------------------
 
 A Nextflow workflow to assemble and reconstruct viral polyproteins from metagenomic data, with a focus on mammalian viruses like picornaviruses.
 
